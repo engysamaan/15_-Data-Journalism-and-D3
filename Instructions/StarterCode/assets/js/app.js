@@ -118,7 +118,7 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
         .attr("text-anchor", "middle")
         .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 37})`)
         .classed("ylabel", true)
-        .text("obesity (%)");
+        .text("Lacks Healthcare (%)");
 
 
 

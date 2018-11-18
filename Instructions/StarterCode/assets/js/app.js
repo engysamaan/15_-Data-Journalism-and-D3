@@ -41,8 +41,9 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
         d.poverty = +d.poverty
         d.healthcare = +d.healthcare
         d.abbr = d.abbr
-        // console.log(d.poverty);
-        // console.log(d.healthcare);
+        d.obesity = d.obesity
+        console.log(d.poverty);
+        console.log(d.obesity);
     });
 
     // Create Scales
@@ -76,17 +77,28 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
         .attr("class", "dot")
         .attr("r", 10)
         .attr("cx",d => xScale(d.poverty))
-        .attr("cy", d => yScale(d.healthcare))
+        .attr("cy",d => yScale(d.healthcare))
         .style("fill", "lightblue")
 
+
+    // Create the event listeners with transitions
         .on("mouseover", function(d) {
-            tip.show(d, this);
-          })
-        // Step 3: Create "mouseout" event listener to hide tooltip
+            tip.show(d, this)
+        })
+
+    // Create "mouseout" event listener to hide tooltip
         .on("mouseout", function(d) {
-            tip.hide(d);
+            tip.hide(d, this)
         });
 
+    // Step 2: Create "mouseover" event listener to display tooltip
+    var tip = d3.tip()
+        .attr("class","d3-tip")
+        .offset([-10,0])
+        .html(function(d) {return `<h6>${(d.state)}</h6><h6>Poverty: ${(d.poverty)}%</h6><h6>Obesity: ${d.obesity}%</h6>`})
+    svg.call(tip);
+
+    // creat the data on the tooltip
     circles
         .append("text")
         .text(function(d) { return d.abbr})
@@ -96,21 +108,18 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
         .attr("dy", d => yScale(d.healthcare) + 4);
 
 
-// // Step 1: Append tooltip div
-//     var toolTip = d3.select("circle")
-//         .append("div")
-//         .classed("tooltip", true);
-
-
-// Create the event listeners with transitions
-
-    // // Step 2: Create "mouseover" event listener to display tooltip
-
-    var tip = d3.tip()
-        .attr("class","d3-tip")
-        .offset([-10,0])
-        .html(function(d) {return `<strong>${(d.poverty)}</strong><hr><strong>${d.healthcare}</strong>`})
-    svg.call(tip);
+    chartGroup.append("label")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 20})`)
+        .classed("xlabel", true)
+        .text("In Poverty (%)");
     
+    chartGroup.append("label")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 37})`)
+        .classed("ylabel", true)
+        .text("obesity (%)");
+
+
 
 });

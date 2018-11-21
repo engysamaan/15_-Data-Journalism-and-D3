@@ -27,10 +27,6 @@ var svg = d3.select("#scatter")
 var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-// // add the tooltip area to the webpage
-// var tooltip = d3.select("body").append("div")
-//     .attr("class", "tooltip")
-//     .style("opacity", 0);
 
 // Import data from the donuts.csv file
 d3.csv("/assets/data/data.csv").then(function(Data, error){
@@ -40,8 +36,8 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
     Data.forEach(d => {
         d.poverty = +d.poverty
         d.healthcare = +d.healthcare
-        d.abbr = d.abbr
-        d.obesity = d.obesity
+        // d.abbr = d.abbr
+        // d.obesity = d.obesity
         console.log(d.poverty);
         console.log(d.obesity);
     });
@@ -67,12 +63,14 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
 
     // Add rightAxis to the right side of the display
     chartGroup.append("g")
-    // .attr("transform", `translate(${chartWidth}, 0)`)
     .call(yAxis);
 
-    var circles = chartGroup.selectAll("g theCircles").data(Data).enter();
-    // Append a path for line1
-    circlesGroup = circles
+    // creat a veriable adds <text> element away from the <circle> element 
+    var circlesGroup = chartGroup.selectAll("g theCircles")
+    .data(Data).enter();
+
+    // Append a circles in the scater
+    circlesGroup
         .append("circle")
         .attr("class", "dot")
         .attr("r", 10)
@@ -81,25 +79,26 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
         .style("fill", "lightblue")
 
 
-    // Create the event listeners with transitions
+    // Create the "mouse_over" event listeners with transitions
         .on("mouseover", function(d) {
             tip.show(d, this)
         })
 
-    // Create "mouseout" event listener to hide tooltip
+    // Create "mouse_out" event listener to hide tooltip
         .on("mouseout", function(d) {
             tip.hide(d, this)
         });
 
-    // Step 2: Create "mouseover" event listener to display tooltip
+    // Create "mouseover" event listener to display tooltip
     var tip = d3.tip()
         .attr("class","d3-tip")
         .offset([-10,0])
-        .html(function(d) {return `<h6>${(d.state)}</h6><h6>Poverty: ${(d.poverty)}%</h6><h6>Obesity: ${d.obesity}%</h6>`})
+        .html(function(d) 
+        {return `<h6>${(d.state)}</h6><h6>Poverty: ${(d.poverty)}%</h6><h6>Obesity: ${d.obesity}%</h6>`})
     svg.call(tip);
 
-    // creat the data on the tooltip
-    circles
+    // Add the abbr data in side the circles   
+    circlesGroup
         .append("text")
         .text(function(d) { return d.abbr})
         .attr("class", "stateText")
@@ -107,19 +106,21 @@ d3.csv("/assets/data/data.csv").then(function(Data, error){
         .attr("dx",d => xScale(d.poverty))
         .attr("dy", d => yScale(d.healthcare) + 4);
 
-
-    chartGroup.append("label")
+    // Creat the X lable
+    svg.append("text")
         .attr("text-anchor", "middle")
-        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 20})`)
+        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 40})`)
         .classed("xlabel", true)
         .text("In Poverty (%)");
     
-    chartGroup.append("label")
-        .attr("text-anchor", "middle")
-        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 37})`)
-        .classed("ylabel", true)
-        .text("Lacks Healthcare (%)");
 
-
+    // Creat the Y lable
+    chartGroup.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (chartHeight / 2))
+        .attr("dy", "15px")
+        .style("text-anchor", "middle")
+        .text("Lacks Healthcare (%)"); 
 
 });
